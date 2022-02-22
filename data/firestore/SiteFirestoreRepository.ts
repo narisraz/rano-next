@@ -1,44 +1,37 @@
 import {SiteRepository} from "../../domain/ports/out/SiteRepository";
 import {Site} from "../../domain/entities/Site";
-import {from, identity, Observable, of} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Builder} from "builder-pattern";
-import {mergeMap} from "rxjs/operators";
+import {map} from "rxjs/operators";
+import {FIRESTORE} from "../../configurations/firebase.config";
+import {collection, doc, query, setDoc, where} from "@firebase/firestore";
+import {collectionData} from "rxfire/firestore";
+import {siteConverter} from "./converters/SiteConverter";
 
 
 export class SiteFirestoreRepository extends SiteRepository {
 
   public SITE_COLLECTION = "site"
-
-  constructor(
-    private afs: AngularFirestore
-  ) {
-    super();
-  }
+  public SITE_COLLECTION_REF = collection(FIRESTORE, this.SITE_COLLECTION)
 
   add(site: Site): Observable<Site> {
-    const docId = this.afs.createId()
+    const docId = this.SITE_COLLECTION_REF.id
     const siteWidId: Site = Builder(site).id(docId).build()
-    return from(
-      this.afs.collection(this.SITE_COLLECTION)
-        .doc(docId)
-        .set(siteWidId)
-    )
-      .pipe(
-        mergeMap(_ => of(siteWidId))
-      )
+    const siteDocRef = doc(FIRESTORE, `${this.SITE_COLLECTION}/${docId}`)
+    setDoc(siteDocRef, siteWidId)
+    return of(siteWidId)
   }
 
   getByAbonneeId(abonneeId: string): Observable<Site> {
-    return this.afs.collection<Site>(this.SITE_COLLECTION, ref => ref.where("abonneeId", "==", abonneeId))
-      .valueChanges()
-      .pipe(
-          mergeMap(identity)
-      )
+    const consommationQuery = query(this.SITE_COLLECTION_REF, where("abonneeId", "==", abonneeId)).withConverter(siteConverter)
+    return collectionData(consommationQuery).pipe(
+      map(sites => sites[0])
+    )
   }
 
   getAllSitesByClientId(clientId: String): Observable<Site[]> {
-    return this.afs.collection<Site>(this.SITE_COLLECTION, ref => ref.where("siteId", "==", clientId))
-      .valueChanges()
+    const siteQuery = query(this.SITE_COLLECTION_REF, where("clientId", "==", clientId)).withConverter(siteConverter)
+    return collectionData(siteQuery)
   }
 
 }

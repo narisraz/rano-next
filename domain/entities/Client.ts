@@ -8,6 +8,4 @@ export class Client {
   address!: Address
   email?: string
   telephones?: string
-  communalTax?: number
-  renewalAndExtensionFund?: number
 }

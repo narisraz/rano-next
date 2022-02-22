@@ -2,52 +2,40 @@ import {ConsommationRepository} from "../../domain/ports/out/ConsommationReposit
 import {Consommation} from "../../domain/entities/Consommation";
 import {from, Observable, of} from "rxjs";
 import {Builder} from "builder-pattern";
-import {flatMap} from "rxjs/operators";
+import {FIRESTORE} from "../../configurations/firebase.config";
+import {collection, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
+import {collectionData} from "rxfire/firestore";
+import {consommationConverter} from "./converters/ConsommationConverter";
 
 
 export class ConsommationFirestoreRepository extends ConsommationRepository {
 
   public CONSOMMATION_COLLECTION = "consommation"
-
-  constructor(
-    private afs: AngularFirestore
-  ) {
-    super();
-  }
+  public CONSOMMATION_COLLECTION_REF = collection(FIRESTORE, this.CONSOMMATION_COLLECTION)
 
   add(consommation: Consommation): Observable<Consommation> {
-    const docId = this.afs.createId()
-    const consommationWidId: Consommation = Builder(consommation).id(docId).build()
-    return from(
-      this.afs.collection(this.CONSOMMATION_COLLECTION)
-        .doc(docId)
-        .set(consommationWidId)
-    )
-      .pipe(
-        flatMap(_ => of(consommationWidId))
-      )
+    const docId = this.CONSOMMATION_COLLECTION_REF.id
+    const consomationId: Consommation = Builder(consommation).id(docId).build()
+    const clientDoc = doc(FIRESTORE, `${this.CONSOMMATION_COLLECTION}/${docId}`)
+    setDoc(clientDoc, consomationId)
+    return of(consomationId)
   }
 
   getLatestConsommationsByAbonneeId(abonneeId: string, count: number): Observable<Array<Consommation>> {
-    return this.afs.collection<Consommation>(this.CONSOMMATION_COLLECTION, ref => ref
-      .where("abonneeId", "==", abonneeId)
-      .limitToLast(count)
-    ).valueChanges()
+    const consommationQuery = query(this.CONSOMMATION_COLLECTION_REF, where("abonneeId", "==", abonneeId)).withConverter(consommationConverter)
+    return collectionData(consommationQuery)
   }
 
   getNotBilledConsommations(abonneeId: string): Observable<Array<Consommation>> {
-    return this.afs.collection<Consommation>(this.CONSOMMATION_COLLECTION, ref => ref
-      .where("abonneeId", "==", abonneeId)
-      .where("amountPaid", "==", 0)
-    ).valueChanges()
+    const consommationQuery = query(this.CONSOMMATION_COLLECTION_REF,
+      where("abonneeId", "==", abonneeId),
+      where("amountPaid", "==", 0)
+    ).withConverter(consommationConverter)
+    return collectionData(consommationQuery)
   }
 
   updateIsBilled(id: string, isBilled: boolean): Observable<void> {
-    return from(
-      this.afs.collection<Consommation>(this.CONSOMMATION_COLLECTION).doc(id)
-      .update({
-        isBilled
-      }))
+    return from(updateDoc(doc(FIRESTORE, id), { isBilled }))
   }
 
 }

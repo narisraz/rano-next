@@ -1,7 +1,7 @@
 import {AbonneeAccount} from "../../../domain/entities/AbonneeAccount";
 import {FirestoreDataConverter} from "@firebase/firestore";
 
-export const userConverter: FirestoreDataConverter<AbonneeAccount> = {
+export const abonneAccountConverter: FirestoreDataConverter<AbonneeAccount> = {
     fromFirestore: (snapshot) => ({
         id: snapshot.id,
         accountId: snapshot.get('accountId'),

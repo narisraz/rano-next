@@ -1,9 +1,9 @@
 import {UseCaseFunction} from "../ports/in/UseCaseFunction";
-import {Observable} from "rxjs";
+import {concatMap, Observable} from "rxjs";
 import {AbonneeAccount} from "../entities/AbonneeAccount";
 import {UpdateAbonneeAccountRequest} from "../entities/requests/UpdateAbonneeAccountRequest";
 import {AbonneeAccountRepository} from "../ports/out/AbonneeAccountRepository";
-import {flatMap, map} from "rxjs/operators";
+import {map} from "rxjs/operators";
 
 
 export class UpdateAbonneeAccount implements UseCaseFunction<UpdateAbonneeAccountRequest, Observable<AbonneeAccount>> {
@@ -17,9 +17,7 @@ export class UpdateAbonneeAccount implements UseCaseFunction<UpdateAbonneeAccoun
     return this.abonneeAccountRepository.getByAbonneeId(updateAbonneeAccountRequest.abonneeId)
       .pipe(
         map(abonneeAccount => abonneeAccount.balance + updateAbonneeAccountRequest.amount),
-        flatMap(newBalance =>
-          this.abonneeAccountRepository.updateBalance(updateAbonneeAccountRequest.abonneeId, newBalance)
-        )
+        concatMap(newBalance => this.abonneeAccountRepository.updateBalance(updateAbonneeAccountRequest.abonneeId, newBalance))
       )
   }
 

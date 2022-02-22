@@ -1,11 +1,10 @@
 import {AbonneeAccountRepository} from "../../domain/ports/out/AbonneeAccountRepository";
-import {from, identity, Observable, of} from "rxjs";
+import {from, identity, Observable} from "rxjs";
 import {AbonneeAccount} from "../../domain/entities/AbonneeAccount";
-import {mergeMap, map} from "rxjs/operators";
-import {Builder} from "builder-pattern";
-import {collection, doc, Firestore, query, updateDoc, where} from "@firebase/firestore";
+import {mergeMap} from "rxjs/operators";
+import {collection, doc, query, updateDoc, where} from "@firebase/firestore";
 import {collectionData} from "rxfire/firestore";
-import {userConverter} from "./converters/AbonneeAccountConverter";
+import {abonneAccountConverter} from "./converters/AbonneeAccountConverter";
 import {FIRESTORE} from "../../configurations/firebase.config";
 
 
@@ -16,26 +15,16 @@ export class AbonneeAccountFirestoreRepository extends AbonneeAccountRepository 
 
   getByAbonneeId(abonneeId: string): Observable<AbonneeAccount> {
     const abonneeRef = query(this.ABONNEE_ACCOUNT_COLLECTION_REF, where("abonneeId", "==", abonneeId))
-        .withConverter(userConverter)
+        .withConverter(abonneAccountConverter)
 
     return collectionData(abonneeRef)
         .pipe(mergeMap(identity))
   }
 
   updateBalance(abonneId: string, value: number): Observable<AbonneeAccount> {
-    return of(updateDoc(doc(FIRESTORE, abonneId), { balance: value }))
-    return this.getByAbonneeId(abonneId)
+    return from(updateDoc(doc(FIRESTORE, abonneId), { balance: value }))
       .pipe(
-          mergeMap(abonneeAccount => {
-          return from(
-
-            this.fs.collection<AbonneeAccount>(this.ABONNEE_ACCOUNT_COLLECTION)
-              .doc(abonneeAccount.id)
-              .update({ balance: value })
-            ).pipe(
-              map(_ => Builder(abonneeAccount).balance(value).build())
-            )
-        })
+        mergeMap(_ => this.getByAbonneeId(abonneId))
       )
   }
 
