@@ -8,7 +8,8 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  styled, Theme,
+  styled,
+  Theme,
   Toolbar
 } from "@mui/material";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -17,7 +18,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import {useTheme} from "@mui/system";
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 
 const drawerWidth = 240;

@@ -1270,6 +1270,16 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha1-p3c2C1s5oaLlEG+OhY8v0tBgxXA=
 
+"@react-rxjs/core@^0.8.4":
+  version "0.8.4"
+  resolved "https://registry.yarnpkg.com/@react-rxjs/core/-/core-0.8.4.tgz#26f6fe3c64014097b487fdd5aa7e36577e5c333a"
+  integrity sha512-n+aa0sSrzj3ctBgmHl13nz0a4nKzcDmu+z+WgUtOmRp7niAzs+f02t2D/FyEfvs0Fp1Zq7z2hh5HM2LBlQPAhA==
+
+"@react-rxjs/utils@^0.9.3":
+  version "0.9.3"
+  resolved "https://registry.yarnpkg.com/@react-rxjs/utils/-/utils-0.9.3.tgz#1762b7146aa6c32677fe1863cf7213d1f7622d22"
+  integrity sha512-arwh1iW+5ciE/fdWwrXXYXF1anyGqBU1WkxvKGZkfxO2sNk+45t9glzHLDWkOUSrMaQeonuTw3vSg7qK/xhJCg==
+
 "@rushstack/eslint-patch@^1.0.8":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rushstack/eslint-patch/-/eslint-patch-1.1.0.tgz#7f698254aadf921e48dda8c0a6b304026b8a9323"

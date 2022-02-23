@@ -9,7 +9,7 @@ import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotioncache';
 import {NextPage} from "next";
 import "reflect-metadata";
-import {initDI} from "../configurations/tsyringe.config";
+import {Subscribe} from "@react-rxjs/core";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -27,7 +27,6 @@ interface MyAppProps extends AppPropsWithLayout {
 }
 
 export default function MyApp(props: MyAppProps) {
-  initDI()
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props;
 
   // Use the layout defined at the page level, if available
@@ -41,7 +40,9 @@ export default function MyApp(props: MyAppProps) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <Component {...pageProps} />
+        <Subscribe>
+          <Component {...pageProps} />
+        </Subscribe>
       </ThemeProvider>
     </CacheProvider>
   );
