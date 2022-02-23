@@ -104,7 +104,7 @@ export default function AdminLayout({ children }: PropsWithChildren<any>) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ display: 'flex' }}>
       <AppBar position="fixed" open={open}>
         <Toolbar>
           <IconButton
@@ -145,7 +145,10 @@ export default function AdminLayout({ children }: PropsWithChildren<any>) {
         </List>
         <Divider />
       </Drawer>
-      {children}
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <DrawerHeader />
+        {children}
+      </Box>
     </Box>
   )
 }
