@@ -1,8 +1,13 @@
 import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
 import {FC} from "react";
+import {container} from "tsyringe";
+import {ListClient} from "../../../domain/usecases/base/ListClient";
 
 export default function ClientList() {
+  const listClient = container.resolve(ListClient)
+  const clients$ = listClient.run()
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
