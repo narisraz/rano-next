@@ -16,7 +16,7 @@ export class ClientFirestoreRepository extends ClientRepository {
 
   add(client: Client): Observable<Client> {
     const docId = this.CLIENT_COLLECTION_REF.id
-    const clientWidId: Client = Builder(client).id(docId).build()
+    const clientWidId: Client = Builder(client).id(docId).address({...client.address}).build()
     const clientDoc = doc(FIRESTORE, `${this.CLIENT_COLLECTION}/${docId}`)
     setDoc(clientDoc, clientWidId)
     return of(clientWidId)

@@ -1,7 +1,7 @@
 import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
 import {FC} from "react";
-import {listClient} from "../../../configurations/di";
+import {listClient} from "../../../configurations/ioc.container";
 import {bind} from "@react-rxjs/core";
 import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
@@ -14,7 +14,7 @@ export default function ClientList() {
 
   return (
     <Box>
-      <Button href={"admin/client/new"} startIcon={<AddIcon />} variant={"contained"}>
+      <Button href={"/admin/client/new"} startIcon={<AddIcon />} variant={"contained"}>
         Nouveau
       </Button>
       <Box sx={{m: 2}}></Box>
