@@ -7,7 +7,7 @@ import {addClient} from "../../../configurations/ioc.container";
 import {Builder} from "builder-pattern";
 import {Client} from "../../../domain/entities/Client";
 import {Address} from "../../../domain/entities/Address";
-import {tap} from "rxjs";
+import {useRouter} from "next/router";
 
 const StyledFieldset = styled("fieldset")(({theme}) => ({
   display: "inline",
@@ -16,6 +16,8 @@ const StyledFieldset = styled("fieldset")(({theme}) => ({
 }))
 
 export default function ClientNew() {
+
+  const router = useRouter()
 
   const formik = useFormik({
     initialValues: {
@@ -29,7 +31,7 @@ export default function ClientNew() {
       fokontany: '',
       lot: ''
     },
-    onSubmit: values => {
+    onSubmit: (values, {resetForm}) => {
       addClient.execute(Builder(Client)
         .nif(values.nif)
         .name(values.name)
@@ -43,9 +45,8 @@ export default function ClientNew() {
           .build()
         )
         .build()
-      ).pipe(
-        tap(_ => formik.resetForm())
       )
+      router.replace("/admin/client/list")
     }
   })
 

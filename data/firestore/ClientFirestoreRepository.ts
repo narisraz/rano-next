@@ -3,7 +3,7 @@ import {Client} from "../../domain/entities/Client";
 import {Observable, of} from "rxjs";
 import {map} from "rxjs/operators";
 import {Builder} from "builder-pattern";
-import {FIRESTORE} from "../../configurations/firebase.config";
+import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
 import {collection, doc, query, setDoc, where} from "@firebase/firestore";
 import {collectionData, docData} from "rxfire/firestore";
 import {clientConverter} from "./converters/ClientConverter";
@@ -15,7 +15,7 @@ export class ClientFirestoreRepository extends ClientRepository {
   public CLIENT_COLLECTION_REF = collection(FIRESTORE, this.CLIENT_COLLECTION)
 
   add(client: Client): Observable<Client> {
-    const docId = this.CLIENT_COLLECTION_REF.id
+    const docId = createFirestoreId(this.CLIENT_COLLECTION)
     const clientWidId: Client = Builder(client).id(docId).address({...client.address}).build()
     const clientDoc = doc(FIRESTORE, `${this.CLIENT_COLLECTION}/${docId}`)
     setDoc(clientDoc, clientWidId)

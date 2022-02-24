@@ -1,11 +1,11 @@
 import {Firestore, getFirestore} from "@firebase/firestore";
-import {initializeApp} from "@firebase/app";
-import "firebase/firestore"
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
 
 export let app: any;
 
 if (!app) {
-  app = initializeApp({
+  app = firebase.initializeApp({
     apiKey: "AIzaSyAj0Zj1L9X0Gz3_BSHAMjxE4gkV9vMytFU",
     authDomain: "rano-23858.firebaseapp.com",
     projectId: "rano-23858",
@@ -17,3 +17,7 @@ if (!app) {
 }
 
 export const FIRESTORE: Firestore = getFirestore(app);
+
+export function createFirestoreId(collection: string): string {
+  return firebase.firestore().collection(collection).doc().id
+}

@@ -27,7 +27,8 @@
     "reflect-metadata": "^0.1.13",
     "rxfire": "^6.0.3",
     "rxjs": "^7.5.4",
-    "tsyringe": "^4.6.0"
+    "tsyringe": "^4.6.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",

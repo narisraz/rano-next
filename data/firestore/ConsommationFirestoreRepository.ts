@@ -2,7 +2,7 @@ import {ConsommationRepository} from "../../domain/ports/out/ConsommationReposit
 import {Consommation} from "../../domain/entities/Consommation";
 import {from, Observable, of} from "rxjs";
 import {Builder} from "builder-pattern";
-import {FIRESTORE} from "../../configurations/firebase.config";
+import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
 import {collection, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
 import {collectionData} from "rxfire/firestore";
 import {consommationConverter} from "./converters/ConsommationConverter";
@@ -14,7 +14,7 @@ export class ConsommationFirestoreRepository extends ConsommationRepository {
   public CONSOMMATION_COLLECTION_REF = collection(FIRESTORE, this.CONSOMMATION_COLLECTION)
 
   add(consommation: Consommation): Observable<Consommation> {
-    const docId = this.CONSOMMATION_COLLECTION_REF.id
+    const docId = createFirestoreId(this.CONSOMMATION_COLLECTION)
     const consomationId: Consommation = Builder(consommation).id(docId).build()
     const clientDoc = doc(FIRESTORE, `${this.CONSOMMATION_COLLECTION}/${docId}`)
     setDoc(clientDoc, consomationId)
