@@ -16,7 +16,7 @@ const StyledFieldset = styled("fieldset")(({theme}) => ({
   borderRadius: "4px"
 }))
 
-export default function ClientNew() {
+export default function NewClient() {
 
   const router = useRouter()
 
@@ -87,7 +87,7 @@ export default function ClientNew() {
   )
 }
 
-ClientNew.getLayout = function getLayout(page: FC) {
+NewClient.getLayout = function getLayout(page: FC) {
   return (
     <AdminLayout>
       {page}

@@ -1,17 +1,20 @@
-export type Role = "A" | "G" | "R" | "C"
+export const roles = ["Administrateur", "Gestionnaire", "Releveur", "Caissier"]
 
 export class User {
   email!: string
-  role!: Role
+  roles!: number[]
   active: boolean = false
   clientId!: string
-  get roleLabel(): string {
-    switch (this.role) {
-      case "A": return "Administrateur"
-      case "G": return "Gestionnaire"
-      case "R": return "Releveur"
-      case "C": return "Caissier"
-      default: return ""
-    }
+  get roleLabel(): string[] {
+    return this.roles
+      .map(role => {
+        switch (role) {
+          case 0: return roles[0]
+          case 1: return roles[1]
+          case 2: return roles[2]
+          case 3: return roles[3]
+          default: return ""
+        }
+      })
   }
 }
