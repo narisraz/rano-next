@@ -5,7 +5,7 @@ import {
   Divider,
   IconButton,
   List,
-  ListItem, ListItemButton,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   styled,
