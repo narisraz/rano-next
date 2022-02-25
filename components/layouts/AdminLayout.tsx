@@ -5,7 +5,7 @@ import {
   Divider,
   IconButton,
   List,
-  ListItem,
+  ListItem, ListItemButton,
   ListItemIcon,
   ListItemText,
   styled,
@@ -20,6 +20,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import {useTheme} from "@mui/system";
 import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
+import {useRouter} from "next/router";
 
 const drawerWidth = 240;
 
@@ -93,6 +94,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 export default function AdminLayout({ children }: PropsWithChildren<any>) {
+  const router = useRouter()
   const theme = useTheme();
   const [open, setOpen] = useState(true);
 
@@ -131,18 +133,18 @@ export default function AdminLayout({ children }: PropsWithChildren<any>) {
         </DrawerHeader>
         <Divider />
         <List>
-          <ListItem button>
+          <ListItemButton component="a" href="/admin/dashboard" selected={router.pathname == "/admin/dashboard"}>
             <ListItemIcon>
               <DashboardIcon />
             </ListItemIcon>
             <ListItemText primary={"Tableau de bord"} />
-          </ListItem>
-          <ListItem button>
+          </ListItemButton>
+          <ListItemButton component="a" href="/admin/client/list" selected={router.pathname == "/admin/client/list"}>
             <ListItemIcon>
               <AccountBoxIcon />
             </ListItemIcon>
             <ListItemText primary={"Clients"} />
-          </ListItem>
+          </ListItemButton>
         </List>
         <Divider />
       </Drawer>

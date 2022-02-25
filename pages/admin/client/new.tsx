@@ -8,6 +8,7 @@ import {Builder} from "builder-pattern";
 import {Client} from "../../../domain/entities/Client";
 import {Address} from "../../../domain/entities/Address";
 import {useRouter} from "next/router";
+import {lastValueFrom} from "rxjs";
 
 const StyledFieldset = styled("fieldset")(({theme}) => ({
   display: "inline",
@@ -31,8 +32,8 @@ export default function ClientNew() {
       fokontany: '',
       lot: ''
     },
-    onSubmit: (values, {resetForm}) => {
-      addClient.execute(Builder(Client)
+    onSubmit: async (values, {resetForm}) => {
+      const client$ = addClient.execute(Builder(Client)
         .nif(values.nif)
         .name(values.name)
         .email(values.email)
@@ -46,7 +47,8 @@ export default function ClientNew() {
         )
         .build()
       )
-      router.replace("/admin/client/list")
+      await lastValueFrom(client$)
+        .then(() => router.replace("/admin/client/list"));
     }
   })
 
