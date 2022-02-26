@@ -17,8 +17,11 @@ import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Typography from "@mui/material/Typography";
 import {ListClientResponse} from "../../../domain/entities/responses/ListClientResponse";
 import {roles} from "../../../domain/entities/User";
@@ -69,6 +72,7 @@ export default function ClientList() {
               <StyledTableCell align="right">Téléphones</StyledTableCell>
               <StyledTableCell align="right">Email</StyledTableCell>
               <StyledTableCell align="right">Commune</StyledTableCell>
+              <StyledTableCell align="center">Actions</StyledTableCell>
             </StyledTableRow>
           </TableHead>
           <TableBody>
@@ -99,9 +103,20 @@ function Row(props: {client : ListClientResponse}) {
       <StyledTableCell align="right">{client.telephones}</StyledTableCell>
       <StyledTableCell align="right">{client.email}</StyledTableCell>
       <StyledTableCell align="right">{client.address?.commune}</StyledTableCell>
+      <StyledTableCell align="center">
+        <IconButton color={"success"}>
+          <VisibilityIcon />
+        </IconButton>
+        <IconButton color={"warning"} href={`/admin/client/edit/${client.id}`}>
+          <ModeEditIcon />
+        </IconButton>
+        <IconButton color={"error"}>
+          <DeleteIcon />
+        </IconButton>
+      </StyledTableCell>
     </StyledTableRow>
     <StyledTableRow>
-      <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={5}>
+      <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{margin: 1}}>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
@@ -124,6 +139,7 @@ function Row(props: {client : ListClientResponse}) {
                     <StyledTableCell>Prénom</StyledTableCell>
                     <StyledTableCell>Email</StyledTableCell>
                     <StyledTableCell>Activé</StyledTableCell>
+                    <StyledTableCell align="center">Actions</StyledTableCell>
                   </StyledTableRow>
                 </TableHead>
                 <TableBody>
@@ -136,6 +152,17 @@ function Row(props: {client : ListClientResponse}) {
                       <StyledTableCell>{user.firstName}</StyledTableCell>
                       <StyledTableCell>{user.email}</StyledTableCell>
                       <StyledTableCell>{user.active ? <CheckIcon color={"success"} /> : <CloseIcon color={"error"} />}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        <IconButton color={"success"}>
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton color={"warning"}>
+                          <ModeEditIcon />
+                        </IconButton>
+                        <IconButton color={"error"}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </StyledTableCell>
                     </StyledTableRow>
                   ))}
                 </TableBody>

@@ -6,4 +6,5 @@ export abstract class ClientRepository {
   abstract findByName(name: string): Observable<Client>
   abstract findById(id: string): Observable<Client | undefined>
   abstract getAll(): Observable<Client[]>
+  abstract update(value: Client): Observable<Client | undefined>
 }

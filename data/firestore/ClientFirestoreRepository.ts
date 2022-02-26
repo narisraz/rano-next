@@ -1,10 +1,10 @@
 import {ClientRepository} from "../../domain/ports/out/ClientRepository";
 import {Client} from "../../domain/entities/Client";
-import {Observable, of} from "rxjs";
-import {map} from "rxjs/operators";
+import {from, Observable, of} from "rxjs";
+import {map, mergeMap} from "rxjs/operators";
 import {Builder} from "builder-pattern";
 import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
-import {collection, doc, query, setDoc, where} from "@firebase/firestore";
+import {collection, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
 import {collectionData, docData} from "rxfire/firestore";
 import {clientConverter} from "./converters/ClientConverter";
 
@@ -37,6 +37,13 @@ export class ClientFirestoreRepository extends ClientRepository {
   getAll(): Observable<Client[]> {
     const clientQuery = query(this.CLIENT_COLLECTION_REF).withConverter(clientConverter)
     return collectionData(clientQuery)
+  }
+
+  update(value: Client): Observable<Client | undefined> {
+    return from(updateDoc(doc(FIRESTORE, `${this.CLIENT_COLLECTION}/${value.id}`), { ...value, address: {...value.address} }))
+      .pipe(
+        mergeMap(_ => this.findById(value.id))
+      )
   }
 
 }
