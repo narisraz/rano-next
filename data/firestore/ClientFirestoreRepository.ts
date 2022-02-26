@@ -39,10 +39,10 @@ export class ClientFirestoreRepository extends ClientRepository {
     return collectionData(clientQuery)
   }
 
-  update(value: Client): Observable<Client | undefined> {
+  update(value: Client): Observable<Client> {
     return from(updateDoc(doc(FIRESTORE, `${this.CLIENT_COLLECTION}/${value.id}`), { ...value, address: {...value.address} }))
       .pipe(
-        mergeMap(_ => this.findById(value.id))
+        map(_ => value)
       )
   }
 
