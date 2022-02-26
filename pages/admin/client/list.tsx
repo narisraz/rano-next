@@ -53,7 +53,7 @@ export default function ClientList() {
     <Box>
       <Box sx={{display: "flex", justifyContent: "space-between"}}>
         <Typography variant="h5" gutterBottom>
-          Liste des clients
+          Liste des clients ({clients.length})
         </Typography>
         <Button href={"/admin/client/new"} startIcon={<AddIcon />} variant={"contained"}>
           Nouveau client
@@ -107,7 +107,7 @@ function Row(props: {client : ListClientResponse}) {
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
               <Typography variant="h6" gutterBottom>
                 {client.users.length
-                  ? `Liste des employés de ${client.name}`
+                  ? `Liste des employés de ${client.name} (${client.users.length})`
                   : `Pas encore d'employé pour ${client.name}`
                 }
               </Typography>
