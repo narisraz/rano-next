@@ -1,6 +1,6 @@
 import {FC, useEffect, useState} from "react";
 import Box from "@mui/material/Box";
-import {Button, TextField} from "@mui/material";
+import {Backdrop, Button, CircularProgress, TextField} from "@mui/material";
 import {useFormik} from "formik";
 import {Builder} from "builder-pattern";
 import {useRouter} from "next/router";
@@ -10,6 +10,7 @@ import {Client} from "../../domain/entities/Client";
 import {Address} from "../../domain/entities/Address";
 import {StyledFieldset} from "./StyledFieldset";
 import AdminLayout from "../layouts/AdminLayout";
+import {AppBackdrop} from "../AppBackdrop";
 
 
 export interface ClientFormProps {
@@ -18,6 +19,7 @@ export interface ClientFormProps {
 
 export default function ClientForm({ id }: ClientFormProps) {
 
+  const [open, setOpen] = useState(false);
   const router = useRouter()
   const [initialValues, setInitialValues] = useState({
     name: '',
@@ -49,6 +51,7 @@ export default function ClientForm({ id }: ClientFormProps) {
     enableReinitialize: true,
     initialValues: initialValues,
     onSubmit: async (values) => {
+      setOpen(true)
       const client = Builder(Client)
         .nif(values.nif)
         .name(values.name)
@@ -65,6 +68,7 @@ export default function ClientForm({ id }: ClientFormProps) {
 
       const client$ = id ? updateClient.execute(Builder(client).id(id).build()) : addClient.execute(client)
       await lastValueFrom(client$)
+        .then(() => setOpen(false))
         .then(() => router.replace("/admin/client/list"));
     }
   })
@@ -99,6 +103,7 @@ export default function ClientForm({ id }: ClientFormProps) {
           </StyledFieldset>
         </Box>
         <Button sx={{ mt: 2 }} variant={"contained"} type={"submit"}>Sauvegarder</Button>
+        <AppBackdrop opened={open} />
       </form>
     </Box>
   )
