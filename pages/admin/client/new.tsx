@@ -9,12 +9,8 @@ import {Client} from "../../../domain/entities/Client";
 import {Address} from "../../../domain/entities/Address";
 import {useRouter} from "next/router";
 import {lastValueFrom} from "rxjs";
+import {StyledFieldset} from "../../../components/forms/StyledFieldset";
 
-const StyledFieldset = styled("fieldset")(({theme}) => ({
-  display: "inline",
-  border: "1px solid grey",
-  borderRadius: "4px"
-}))
 
 export default function NewClient() {
 

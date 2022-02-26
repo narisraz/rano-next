@@ -2,10 +2,9 @@ import {
   Button,
   Collapse,
   IconButton,
-  Paper,
+  Paper, styled,
   Table,
-  TableBody,
-  TableCell,
+  TableBody, TableCell, tableCellClasses,
   TableContainer,
   TableHead,
   TableRow
@@ -18,9 +17,32 @@ import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import Typography from "@mui/material/Typography";
 import {ListClientResponse} from "../../../domain/entities/responses/ListClientResponse";
+import {roles} from "../../../domain/entities/User";
 
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
 
 const [useClients] = bind(listClient.run(), [])
 
@@ -29,24 +51,25 @@ export default function ClientList() {
 
   return (
     <Box>
-      <Button href={"/admin/client/new"} startIcon={<AddIcon />} variant={"contained"}>
-        Nouveau
-      </Button>
+      <Box sx={{display: "flex", justifyContent: "space-between"}}>
+        <Typography variant="h5" gutterBottom>
+          Liste des clients
+        </Typography>
+        <Button href={"/admin/client/new"} startIcon={<AddIcon />} variant={"contained"}>
+          Nouveau client
+        </Button>
+      </Box>
       <Box sx={{m: 2}}></Box>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 700 }}>
           <TableHead>
-            <TableRow>
-              <TableCell></TableCell>
-              <TableCell>Nom</TableCell>
-              <TableCell align="right">Téléphones</TableCell>
-              <TableCell align="right">Email</TableCell>
-              <TableCell align="right">NIF</TableCell>
-              <TableCell align="right">Stat</TableCell>
-              <TableCell align="right">Région</TableCell>
-              <TableCell align="right">Commune</TableCell>
-              <TableCell align="right">Fokontany</TableCell>
-            </TableRow>
+            <StyledTableRow>
+              <StyledTableCell></StyledTableCell>
+              <StyledTableCell>Nom</StyledTableCell>
+              <StyledTableCell align="right">Téléphones</StyledTableCell>
+              <StyledTableCell align="right">Email</StyledTableCell>
+              <StyledTableCell align="right">Commune</StyledTableCell>
+            </StyledTableRow>
           </TableHead>
           <TableBody>
             {clients.map(client =>
@@ -64,57 +87,64 @@ function Row(props: {client : ListClientResponse}) {
   const [open, setOpen] = useState(false)
 
   return <>
-    <TableRow sx={{'& > *': {borderBottom: 'unset'}}}>
-      <TableCell>
+    <StyledTableRow sx={{'& > *': {borderBottom: 'unset'}}}>
+      <StyledTableCell>
         <IconButton size="small" onClick={() => setOpen(!open)}>
           {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
         </IconButton>
-      </TableCell>
-      <TableCell component="th" scope="row">
+      </StyledTableCell>
+      <StyledTableCell component="th" scope="row">
         {client.name}
-      </TableCell>
-      <TableCell align="right">{client.telephones}</TableCell>
-      <TableCell align="right">{client.email}</TableCell>
-      <TableCell align="right">{client.nif}</TableCell>
-      <TableCell align="right">{client.stat}</TableCell>
-      <TableCell align="right">{client.address?.region}</TableCell>
-      <TableCell align="right">{client.address?.commune}</TableCell>
-      <TableCell align="right">{client.address?.fokontany}</TableCell>
-    </TableRow>
-    <TableRow>
-      <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={9}>
+      </StyledTableCell>
+      <StyledTableCell align="right">{client.telephones}</StyledTableCell>
+      <StyledTableCell align="right">{client.email}</StyledTableCell>
+      <StyledTableCell align="right">{client.address?.commune}</StyledTableCell>
+    </StyledTableRow>
+    <StyledTableRow>
+      <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={5}>
         <Collapse in={open} timeout="auto" unmountOnExit>
           <Box sx={{margin: 1}}>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
               <Typography variant="h6" gutterBottom>
-                Liste des utilisateurs de {client.name}
+                {client.users.length
+                  ? `Liste des employés de ${client.name}`
+                  : `Pas encore d'employé pour ${client.name}`
+                }
               </Typography>
               <Button href={`/admin/client/${client.id}/user/new`} startIcon={<AddIcon/>} variant={"text"}>
-                Nouvel utilisateur
+                Nouvel employé
               </Button>
             </Box>
-            <Table size="small" sx={{width: "100%"}}>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Email</TableCell>
-                  <TableCell>Droit</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {client.users.map((user) => (
-                  <TableRow key={user.email}>
-                    <TableCell component="th" scope="row">
-                      {user.email}
-                    </TableCell>
-                    <TableCell>{user.roleLabel}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {client.users.length > 0 &&
+              <Table size="small" sx={{width: "100%"}}>
+                <TableHead>
+                  <StyledTableRow>
+                    <StyledTableCell>Rôle</StyledTableCell>
+                    <StyledTableCell>Nom</StyledTableCell>
+                    <StyledTableCell>Prénom</StyledTableCell>
+                    <StyledTableCell>Email</StyledTableCell>
+                    <StyledTableCell>Activé</StyledTableCell>
+                  </StyledTableRow>
+                </TableHead>
+                <TableBody>
+                  {client.users.map((user) => (
+                    <StyledTableRow key={user.email}>
+                      <StyledTableCell component="th" scope="row">
+                        {roles[user.role]}
+                      </StyledTableCell>
+                      <StyledTableCell>{user.name}</StyledTableCell>
+                      <StyledTableCell>{user.firstName}</StyledTableCell>
+                      <StyledTableCell>{user.email}</StyledTableCell>
+                      <StyledTableCell>{user.active ? <CheckIcon color={"success"} /> : <CloseIcon color={"error"} />}</StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            }
           </Box>
         </Collapse>
-      </TableCell>
-    </TableRow>
+      </StyledTableCell>
+    </StyledTableRow>
   </>;
 }
 

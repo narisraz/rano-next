@@ -139,7 +139,7 @@ export default function AdminLayout({ children }: PropsWithChildren<any>) {
             </ListItemIcon>
             <ListItemText primary={"Tableau de bord"} />
           </ListItemButton>
-          <ListItemButton component="a" href="/admin/client/list" selected={router.pathname == "/admin/client/list"}>
+          <ListItemButton component="a" href="/admin/client/list" selected={router.pathname.includes("/admin/client")}>
             <ListItemIcon>
               <AccountBoxIcon />
             </ListItemIcon>

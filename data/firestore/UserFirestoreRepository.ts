@@ -14,7 +14,7 @@ export class UserFirestoreRepository extends UserRepository {
 
   add(user: User): Observable<User> {
     const docId = createFirestoreId(this.USER_COLLECTION)
-    const userWithdId: User = Builder(user).build()
+    const userWithdId: User = Builder(user).address({...user.address}).build()
     const siteDocRef = doc(FIRESTORE, `${this.USER_COLLECTION}/${docId}`)
     setDoc(siteDocRef, userWithdId)
     return of(userWithdId)

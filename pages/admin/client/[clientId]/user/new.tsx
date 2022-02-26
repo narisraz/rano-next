@@ -1,23 +1,15 @@
 import Box from "@mui/material/Box";
-import {
-  Button, Checkbox,
-  Chip,
-  FormControl,
-  InputLabel, ListItemText,
-  MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  TextField,
-  Theme,
-  useTheme
-} from "@mui/material";
+import {Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useRouter} from "next/router";
 import {useFormik} from "formik";
-import {roles} from "../../../../../domain/entities/User";
-import {FC, useState} from "react";
+import {roles, User} from "../../../../../domain/entities/User";
+import {FC} from "react";
 import AdminLayout from "../../../../../components/layouts/AdminLayout";
-import {number} from "prop-types";
+import {addUser} from "../../../../../configurations/ioc.container";
+import {Builder} from "builder-pattern";
+import {lastValueFrom} from "rxjs";
+import {Address} from "../../../../../domain/entities/Address";
+import {StyledFieldset} from "../../../../../components/forms/StyledFieldset";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -31,46 +23,42 @@ const MenuProps = {
 };
 
 export default function NewUser() {
-  const theme = useTheme();
   const router = useRouter()
-  const clientId = router.query.clientId?.at(0)
-  const [role, setRole] = useState<string[]>([])
-
-  const handleChange = (event: SelectChangeEvent<typeof role>) => {
-    const {
-      target: { value },
-    } = event;
-    setRole(typeof value === 'string' ? value.split(',') : value,);
-  };
-
-  function getStyles(name: string, role: readonly string[], theme: Theme) {
-    return {
-      fontWeight:
-        role.indexOf(name) === -1
-          ? theme.typography.fontWeightRegular
-          : theme.typography.fontWeightMedium,
-    };
-  }
+  const clientId = router.query.clientId
 
   const formik = useFormik({
     initialValues: {
+      name: '',
+      firstName: '',
+      region: '',
+      commune: '',
+      fokontany: '',
+      telephones: '',
+      lot: '',
       email: '',
-      roles: '',
+      role: 0,
       active: true,
-      clientId: clientId
     },
     onSubmit: async (values) => {
-      alert(JSON.stringify(values))
-      /*
       const user$ = addUser.execute(Builder(User)
+        .name(values.name)
+        .firstName(values.firstName)
+        .address(Builder(Address)
+          .region(values.region)
+          .commune(values.commune)
+          .fokontany(values.fokontany)
+          .lot(values.lot)
+          .build()
+        )
+        .telephones(values.telephones)
         .email(values.email)
-        .roles(values.roles)
+        .role(values.role)
         .active(values.active)
-        .clientId(values.clientId ?? "")
+        .clientId(clientId as string)
         .build()
       )
       await lastValueFrom(user$)
-        .then(() => router.replace("/admin/client/list"));*/
+        .then(() => router.replace("/admin/client/list"));
     }
   })
 
@@ -79,39 +67,40 @@ export default function NewUser() {
       <div>
         <h2>{clientId}</h2>
       </div>
-      <h3>Nouvel utilisateur</h3>
+      <h3>Nouvel employé</h3>
       <form onSubmit={formik.handleSubmit}>
         <Box>
-          <TextField label="Nom" variant="outlined" name="name" value={formik.values.email} onChange={formik.handleChange} />
+          <TextField label="Email" variant="outlined" name="email" value={formik.values.email} onChange={formik.handleChange} />
         </Box>
         <Box sx={{ mt: 2 }}>
-          <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel>Rôles</InputLabel>
+          <StyledFieldset>
+            <legend>Informations personnels : </legend>
+            <TextField label="Nom" variant="outlined" sx={{ mr: 2 }} name="name" value={formik.values.name} onChange={formik.handleChange} />
+            <TextField label="Prénom" variant="outlined" sx={{ mr: 2 }} name="firstName" value={formik.values.firstName} onChange={formik.handleChange} />
+            <TextField label="Téléphones" variant="outlined" name="telephones" value={formik.values.telephones} onChange={formik.handleChange} />
+          </StyledFieldset>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <StyledFieldset>
+            <legend>Adresse : </legend>
+            <TextField label="Région" variant="outlined" sx={{ mr: 2 }} name="region" value={formik.values.region} onChange={formik.handleChange} />
+            <TextField label="Commune" variant="outlined" sx={{ mr: 2 }} name="commune" value={formik.values.commune} onChange={formik.handleChange} />
+            <TextField label="Fokontany" variant="outlined" sx={{ mr: 2 }} name="fokontany" value={formik.values.fokontany} onChange={formik.handleChange} />
+            <TextField label="Lot" variant="outlined" name="lot" value={formik.values.lot} onChange={formik.handleChange} />
+          </StyledFieldset>
+        </Box>
+        <Box sx={{ mt: 2 }}>
+          <FormControl>
+            <InputLabel>Rôle</InputLabel>
             <Select
-              name={"role"}
-              multiple
-              value={role}
-              onChange={handleChange}
-              input={<OutlinedInput />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
-                    <Chip key={value} label={value} />
-                  ))}
-                </Box>
-              )}
-              MenuProps={MenuProps}
+              name="role"
+              value={formik.values.role}
+              label="Rôle"
+              onChange={formik.handleChange}
             >
-              {roles.map((name, index) => (
-                <MenuItem
-                  key={name}
-                  value={name}
-                  style={getStyles(name, role, theme)}
-                >
-                  <Checkbox checked={role.indexOf(name) > -1} />
-                  <ListItemText primary={name} />
-                </MenuItem>
-              ))}
+              {roles.map((role, index) =>
+                <MenuItem key={index} value={index}>{role}</MenuItem>
+              )}
             </Select>
           </FormControl>
         </Box>

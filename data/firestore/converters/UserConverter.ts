@@ -4,16 +4,22 @@ import {User} from "../../../domain/entities/User";
 export const userConverter: FirestoreDataConverter<User> = {
   fromFirestore: (snapshot) => ({
     email: snapshot.get("email"),
-    roles: snapshot.get("role"),
+    role: snapshot.get("role"),
     clientId: snapshot.get("clientId"),
     active: snapshot.get("active"),
-    roleLabel: snapshot.get("roleLabel")
+    name: snapshot.get("name"),
+    firstName: snapshot.get("firstName"),
+    address: snapshot.get("address"),
+    telephones: snapshot.get("telephones")
   }),
-  toFirestore: (site) => ({
-    email: site.email,
-    role: site.roles,
-    clientId: site.clientId,
-    active: site.active,
-    roleLabel: site.roleLabel
+  toFirestore: (user) => ({
+    email: user.email,
+    role: user.role,
+    clientId: user.clientId,
+    active: user.active,
+    name: user.name,
+    firstName: user.firstName,
+    address: user.address,
+    telephones: user.telephones
   }),
 };
