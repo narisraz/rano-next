@@ -7,4 +7,5 @@ export abstract class ClientRepository {
   abstract findById(id: string): Observable<Client | undefined>
   abstract getAll(): Observable<Client[]>
   abstract update(value: Client): Observable<Client>
+  abstract delete(id: string): Promise<void>
 }

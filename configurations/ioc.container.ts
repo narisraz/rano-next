@@ -5,6 +5,7 @@ import {UserFirestoreRepository} from "../data/firestore/UserFirestoreRepository
 import {AddUser} from "../domain/usecases/base/AddUser";
 import {GetClient} from "../domain/usecases/base/GetClient";
 import {UpdateClient} from "../domain/usecases/base/UpdateClient";
+import {DeleteClient} from "../domain/usecases/base/DeleteClient";
 
 const clientRepository = new ClientFirestoreRepository()
 const userRepository = new UserFirestoreRepository()
@@ -13,5 +14,6 @@ export const listClient = new ListClient(clientRepository, userRepository)
 export const addClient = new AddClient(clientRepository)
 export const getClient = new GetClient(clientRepository)
 export const updateClient = new UpdateClient(clientRepository)
+export const deleteClient = new DeleteClient(clientRepository)
 
 export const addUser = new AddUser(userRepository)

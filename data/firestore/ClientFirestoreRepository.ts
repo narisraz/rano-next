@@ -4,7 +4,7 @@ import {from, Observable, of} from "rxjs";
 import {map, mergeMap} from "rxjs/operators";
 import {Builder} from "builder-pattern";
 import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
-import {collection, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
+import {collection, deleteDoc, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
 import {collectionData, docData} from "rxfire/firestore";
 import {clientConverter} from "./converters/ClientConverter";
 
@@ -44,6 +44,10 @@ export class ClientFirestoreRepository extends ClientRepository {
       .pipe(
         map(_ => value)
       )
+  }
+
+  delete(id: string): Promise<void> {
+    return deleteDoc(doc(FIRESTORE, `${this.CLIENT_COLLECTION}/${id}`))
   }
 
 }

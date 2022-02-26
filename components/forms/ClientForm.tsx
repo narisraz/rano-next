@@ -34,7 +34,7 @@ export default function ClientForm({ id }: ClientFormProps) {
   })
 
   useEffect(() => {
-    getClient.execute(id as string).subscribe(value => setInitialValues({
+    const ref = getClient.execute(id as string).subscribe(value => setInitialValues({
       name: value?.name ?? '',
       email: value?.email ?? '',
       telephones: value?.telephones ?? '',
@@ -45,6 +45,9 @@ export default function ClientForm({ id }: ClientFormProps) {
       fokontany: value?.address.fokontany ?? '',
       lot: value?.address.lot ?? ''
     }))
+    return () => {
+      ref.unsubscribe()
+    }
   }, [id])
 
   const formik = useFormik({

@@ -1,6 +1,6 @@
 import {
   Button,
-  Collapse,
+  Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
   IconButton,
   Paper, styled,
   Table,
@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
 import {FC, useState} from "react";
-import {listClient} from "../../../configurations/ioc.container";
+import {deleteClient, listClient} from "../../../configurations/ioc.container";
 import {bind} from "@react-rxjs/core";
 import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
@@ -25,6 +25,8 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Typography from "@mui/material/Typography";
 import {ListClientResponse} from "../../../domain/entities/responses/ListClientResponse";
 import {roles} from "../../../domain/entities/User";
+import {AppBackdrop} from "../../../components/AppBackdrop";
+import {DeleteConfirmDialog} from "../../../components/DeleteConfirmDialog";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -88,13 +90,26 @@ export default function ClientList() {
 
 function Row(props: {client : ListClientResponse}) {
   const { client } = props
-  const [open, setOpen] = useState(false)
+  const [showEmployeeList, setShowEmployeeList] = useState(false)
+  const [openDialog, setOpenDialog] = useState(false);
+  const [backdropOpened, setBackdropOpened] = useState(false);
+
+  const closeDialog = () => {
+    setOpenDialog(false)
+  }
+
+  const removeClient = () => {
+    setBackdropOpened(true)
+    deleteClient.execute(client.id)
+      .then(() => closeDialog())
+      .then(() => setBackdropOpened(false))
+  }
 
   return <>
     <StyledTableRow sx={{'& > *': {borderBottom: 'unset'}}}>
       <StyledTableCell>
-        <IconButton size="small" onClick={() => setOpen(!open)}>
-          {open ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
+        <IconButton size="small" onClick={() => setShowEmployeeList(!showEmployeeList)}>
+          {showEmployeeList ? <KeyboardArrowUpIcon/> : <KeyboardArrowDownIcon/>}
         </IconButton>
       </StyledTableCell>
       <StyledTableCell component="th" scope="row">
@@ -110,14 +125,16 @@ function Row(props: {client : ListClientResponse}) {
         <IconButton color={"warning"} href={`/admin/client/edit/${client.id}`}>
           <ModeEditIcon />
         </IconButton>
-        <IconButton color={"error"}>
+        <IconButton color={"error"} onClick={() => setOpenDialog(true)}>
           <DeleteIcon />
         </IconButton>
       </StyledTableCell>
     </StyledTableRow>
     <StyledTableRow>
       <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-        <Collapse in={open} timeout="auto" unmountOnExit>
+        <AppBackdrop opened={backdropOpened}></AppBackdrop>
+        <DeleteConfirmDialog title={"Client"} open={openDialog} close={closeDialog} action={removeClient}></DeleteConfirmDialog>
+        <Collapse in={showEmployeeList} timeout="auto" unmountOnExit>
           <Box sx={{margin: 1}}>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
               <Typography variant="h6" gutterBottom>
