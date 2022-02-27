@@ -57,6 +57,7 @@ export default function ClientForm({ id }: ClientFormProps) {
       setOpen(true)
       const client = Builder(Client)
         .nif(values.nif)
+        .stat(values.stat)
         .name(values.name)
         .email(values.email)
         .telephones(values.telephones)
