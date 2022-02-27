@@ -34,17 +34,22 @@ export default function ClientForm({ id }: ClientFormProps) {
   })
 
   useEffect(() => {
-    const ref = getClient.execute(id as string).subscribe(value => setInitialValues({
-      name: value?.name ?? '',
-      email: value?.email ?? '',
-      telephones: value?.telephones ?? '',
-      nif: value?.nif ?? '',
-      stat: value?.stat ?? '',
-      region: value?.address.region ?? '',
-      commune: value?.address.commune ?? '',
-      fokontany: value?.address.fokontany ?? '',
-      lot: value?.address.lot ?? ''
-    }))
+    if (id)
+      setOpen(true)
+    const ref = getClient.execute(id as string).subscribe(value => {
+      setOpen(false)
+      setInitialValues({
+        name: value?.name ?? '',
+        email: value?.email ?? '',
+        telephones: value?.telephones ?? '',
+        nif: value?.nif ?? '',
+        stat: value?.stat ?? '',
+        region: value?.address.region ?? '',
+        commune: value?.address.commune ?? '',
+        fokontany: value?.address.fokontany ?? '',
+        lot: value?.address.lot ?? ''
+      })
+    })
     return () => {
       ref.unsubscribe()
     }

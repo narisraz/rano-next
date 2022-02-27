@@ -22,20 +22,26 @@ import {
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import {AppBackdrop} from "../../../../components/AppBackdrop";
 
 export default function ClientDetail() {
 
   const router = useRouter()
   const id = router.query.clientId
   const [client, setClient] = useState<Client>()
+  const [openBackdrop, setOpenBackdrop] = useState(true)
 
   useEffect(() => {
-    const ref = getClient.execute(id as string).subscribe(value => setClient(value))
+    const ref = getClient.execute(id as string).subscribe(value => {
+      setOpenBackdrop(false)
+      setClient(value)
+    })
     return () => ref.unsubscribe()
   }, [id])
 
   return (
     <Box>
+      <AppBackdrop opened={openBackdrop} />
       <Box sx={{display: "flex", justifyContent: "space-between"}}>
         <Typography variant="h5" gutterBottom>
           {client?.name}

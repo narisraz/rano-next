@@ -28,6 +28,7 @@ import {roles} from "../../../domain/entities/User";
 import {AppBackdrop} from "../../../components/AppBackdrop";
 import {DeleteConfirmDialog} from "../../../components/DeleteConfirmDialog";
 import useAsyncEffect from "use-async-effect";
+import {Client} from "../../../domain/entities/Client";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -50,13 +51,21 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const [useClients] = bind(listClient.run(), [])
-
 export default function ClientList() {
-  const clients = useClients()
+  const [clients, setClients] = useState<Client[]>([])
+  const [openBackdrop, setOpenBackdrop] = useState(true)
+
+  useEffect(() => {
+    const ref = listClient.run().subscribe(value => {
+      setOpenBackdrop(false)
+      setClients(value)
+    })
+    return () => ref.unsubscribe()
+  })
 
   return (
     <Box>
+      <AppBackdrop opened={openBackdrop} />
       <Box sx={{display: "flex", justifyContent: "space-between"}}>
         <Typography variant="h5" gutterBottom>
           Liste des clients ({clients.length})
