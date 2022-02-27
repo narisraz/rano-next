@@ -117,7 +117,7 @@ function Row(props: {client : ListClientResponse}) {
       <StyledTableCell align="right">{client.email}</StyledTableCell>
       <StyledTableCell align="right">{client.address?.commune}</StyledTableCell>
       <StyledTableCell align="center">
-        <IconButton color={"success"}>
+        <IconButton color={"success"} href={`/admin/client/${client.id}`}>
           <VisibilityIcon />
         </IconButton>
         <IconButton color={"warning"} href={`/admin/client/edit/${client.id}`}>

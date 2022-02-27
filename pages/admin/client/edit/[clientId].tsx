@@ -5,7 +5,6 @@ import {useRouter} from "next/router";
 import {bind} from "@react-rxjs/core";
 import {getClient} from "../../../../configurations/ioc.container";
 
-const [client] = bind((id: string) => getClient.execute(id), undefined)
 
 export default function EditClient() {
 
