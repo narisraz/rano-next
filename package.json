@@ -28,6 +28,7 @@
     "rxfire": "^6.0.3",
     "rxjs": "^7.5.4",
     "tsyringe": "^4.6.0",
+    "use-async-effect": "^2.2.5",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

@@ -10,7 +10,7 @@ import {
   TableRow
 } from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
-import {FC, useState} from "react";
+import {FC, useCallback, useEffect, useState} from "react";
 import {deleteClient, listClient} from "../../../configurations/ioc.container";
 import {bind} from "@react-rxjs/core";
 import Box from "@mui/material/Box";
@@ -27,6 +27,7 @@ import {ListClientResponse} from "../../../domain/entities/responses/ListClientR
 import {roles} from "../../../domain/entities/User";
 import {AppBackdrop} from "../../../components/AppBackdrop";
 import {DeleteConfirmDialog} from "../../../components/DeleteConfirmDialog";
+import useAsyncEffect from "use-async-effect";
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -89,20 +90,17 @@ export default function ClientList() {
 }
 
 function Row(props: {client : ListClientResponse}) {
+
   const { client } = props
   const [showEmployeeList, setShowEmployeeList] = useState(false)
   const [openDialog, setOpenDialog] = useState(false);
-  const [backdropOpened, setBackdropOpened] = useState(false);
 
   const closeDialog = () => {
     setOpenDialog(false)
   }
 
   const removeClient = () => {
-    setBackdropOpened(true)
     deleteClient.execute(client.id)
-      .then(() => closeDialog())
-      .then(() => setBackdropOpened(false))
   }
 
   return <>
@@ -132,7 +130,6 @@ function Row(props: {client : ListClientResponse}) {
     </StyledTableRow>
     <StyledTableRow>
       <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-        <AppBackdrop opened={backdropOpened}></AppBackdrop>
         <DeleteConfirmDialog title={"Client"} open={openDialog} close={closeDialog} action={removeClient}></DeleteConfirmDialog>
         <Collapse in={showEmployeeList} timeout="auto" unmountOnExit>
           <Box sx={{margin: 1}}>
