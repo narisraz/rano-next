@@ -1,5 +1,4 @@
 import {Backdrop, CircularProgress} from "@mui/material";
-import {useState} from "react";
 
 export interface BackdropProps {
   opened: boolean

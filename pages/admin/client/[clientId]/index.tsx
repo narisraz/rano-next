@@ -1,27 +1,12 @@
-import ClientForm from "../../../../components/forms/ClientForm";
 import {FC, useEffect, useState} from "react";
 import AdminLayout from "../../../../components/layouts/AdminLayout";
 import Box from "@mui/material/Box";
 import {useRouter} from "next/router";
 import {getClient} from "../../../../configurations/ioc.container";
-import {bind} from "@react-rxjs/core";
-import {Builder} from "builder-pattern";
 import {Client} from "../../../../domain/entities/Client";
-import {
-  Button,
-  Card,
-  CardContent,
-  IconButton,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow
-} from "@mui/material";
+import {Button, Paper, Table, TableBody, TableCell, TableContainer, TableRow} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import {AppBackdrop} from "../../../../components/AppBackdrop";
 
 export default function ClientDetail() {

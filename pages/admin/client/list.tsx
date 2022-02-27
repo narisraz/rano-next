@@ -1,18 +1,20 @@
 import {
   Button,
-  Collapse, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Collapse,
   IconButton,
-  Paper, styled,
+  Paper,
+  styled,
   Table,
-  TableBody, TableCell, tableCellClasses,
+  TableBody,
+  TableCell,
+  tableCellClasses,
   TableContainer,
   TableHead,
   TableRow
 } from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
-import {FC, useCallback, useEffect, useState} from "react";
+import {FC, useEffect, useState} from "react";
 import {deleteClient, listClient} from "../../../configurations/ioc.container";
-import {bind} from "@react-rxjs/core";
 import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -27,7 +29,6 @@ import {ListClientResponse} from "../../../domain/entities/responses/ListClientR
 import {roles} from "../../../domain/entities/User";
 import {AppBackdrop} from "../../../components/AppBackdrop";
 import {DeleteConfirmDialog} from "../../../components/DeleteConfirmDialog";
-import useAsyncEffect from "use-async-effect";
 import {Client} from "../../../domain/entities/Client";
 
 

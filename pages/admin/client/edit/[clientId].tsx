@@ -1,9 +1,7 @@
 import ClientForm from "../../../../components/forms/ClientForm";
-import {FC, useEffect, useState} from "react";
+import {FC} from "react";
 import AdminLayout from "../../../../components/layouts/AdminLayout";
 import {useRouter} from "next/router";
-import {bind} from "@react-rxjs/core";
-import {getClient} from "../../../../configurations/ioc.container";
 
 
 export default function EditClient() {

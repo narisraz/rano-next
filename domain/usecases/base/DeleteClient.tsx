@@ -1,5 +1,4 @@
 import {UseCaseFunction} from "../../ports/in/UseCaseFunction";
-import {Observable} from "rxjs";
 import {ClientRepository} from "../../ports/out/ClientRepository";
 
 export class DeleteClient implements UseCaseFunction<string, Promise<void>> {

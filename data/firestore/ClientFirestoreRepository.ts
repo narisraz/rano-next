@@ -1,7 +1,7 @@
 import {ClientRepository} from "../../domain/ports/out/ClientRepository";
 import {Client} from "../../domain/entities/Client";
 import {from, Observable, of} from "rxjs";
-import {map, mergeMap} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {Builder} from "builder-pattern";
 import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
 import {collection, deleteDoc, doc, query, setDoc, updateDoc, where} from "@firebase/firestore";
