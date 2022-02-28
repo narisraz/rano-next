@@ -198,7 +198,7 @@ function Row(props: {client : ListClientResponse}) {
                       <StyledTableCell>{user.email}</StyledTableCell>
                       <StyledTableCell>{user.active ? <CheckIcon color={"success"} /> : <CloseIcon color={"error"} />}</StyledTableCell>
                       <StyledTableCell align="center">
-                        <IconButton color={"success"}>
+                        <IconButton color={"success"} href={`/admin/client/${client.id}/user/${user.id}`}>
                           <VisibilityIcon />
                         </IconButton>
                         <IconButton color={"warning"} href={`/admin/client/${client.id}/user/edit/${user.id}`}>
