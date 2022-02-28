@@ -10,16 +10,19 @@ import {Builder} from "builder-pattern";
 import {lastValueFrom} from "rxjs";
 import {Address} from "../../../../../domain/entities/Address";
 import {StyledFieldset} from "../../../../../components/forms/StyledFieldset";
+import {AppBackdrop} from "../../../../../components/AppBackdrop";
 
 
 export default function NewUser() {
   const router = useRouter()
   const clientId = router.query.clientId
   const [clientName, setClientName] = useState('')
+  const [openBackdrop, setOpenBackdrop] = useState(true)
 
   useEffect(() => {
     const ref = getClient.execute(clientId as string).subscribe(value => {
       setClientName(value?.name ?? '')
+      setOpenBackdrop(false)
     })
     return () => ref.unsubscribe()
   }, [clientId])
@@ -62,6 +65,7 @@ export default function NewUser() {
 
   return (
     <Box>
+      <AppBackdrop opened={openBackdrop} />
       <h3>{clientName} - Nouvel employé</h3>
       <Divider />
       <Box sx={{m: 2}}></Box>
