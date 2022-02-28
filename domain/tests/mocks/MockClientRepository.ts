@@ -12,6 +12,13 @@ export const
 
 export function MockClientRepository(): ClientRepository {
   return new class extends ClientRepository {
+    delete(id: string): Promise<void> {
+      return Promise.resolve(undefined);
+    }
+
+    update(value: Client): Observable<Client> {
+      return of(value);
+    }
     getAll(): Observable<Client[]> {
         return of([client1])
     }
