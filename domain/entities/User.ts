@@ -3,6 +3,7 @@ import {Address} from "./Address";
 export const roles = ["Gestionnaire", "Releveur", "Caissier"]
 
 export class User {
+  id!: string
   email!: string
   role!: number
   name?: string

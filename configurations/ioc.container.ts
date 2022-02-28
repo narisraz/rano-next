@@ -6,6 +6,7 @@ import {AddUser} from "../domain/usecases/base/AddUser";
 import {GetClient} from "../domain/usecases/base/GetClient";
 import {UpdateClient} from "../domain/usecases/base/UpdateClient";
 import {DeleteClient} from "../domain/usecases/base/DeleteClient";
+import {DeleteUser} from "../domain/usecases/base/DeleteUser";
 
 const clientRepository = new ClientFirestoreRepository()
 const userRepository = new UserFirestoreRepository()
@@ -17,3 +18,4 @@ export const updateClient = new UpdateClient(clientRepository)
 export const deleteClient = new DeleteClient(clientRepository)
 
 export const addUser = new AddUser(userRepository)
+export const deleteUser = new DeleteUser(userRepository)

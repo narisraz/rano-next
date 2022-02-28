@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import AdminLayout from "../../../components/layouts/AdminLayout";
 import {FC, useEffect, useState} from "react";
-import {deleteClient, listClient} from "../../../configurations/ioc.container";
+import {deleteClient, deleteUser, listClient} from "../../../configurations/ioc.container";
 import Box from "@mui/material/Box";
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -26,7 +26,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Typography from "@mui/material/Typography";
 import {ListClientResponse} from "../../../domain/entities/responses/ListClientResponse";
-import {roles} from "../../../domain/entities/User";
+import {roles, User} from "../../../domain/entities/User";
 import {AppBackdrop} from "../../../components/AppBackdrop";
 import {DeleteConfirmDialog} from "../../../components/DeleteConfirmDialog";
 import {Client} from "../../../domain/entities/Client";
@@ -104,13 +104,30 @@ function Row(props: {client : ListClientResponse}) {
   const { client } = props
   const [showEmployeeList, setShowEmployeeList] = useState(false)
   const [openDialog, setOpenDialog] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState('')
+  const enum DeleteAction { CLIENT, USER}
+  const [deleteAction, setDeleteAction] = useState<DeleteAction>()
+  const [selectedUser, setSelectedUser] = useState<User>()
 
   const closeDialog = () => {
     setOpenDialog(false)
   }
 
+  const deleteData = (action: DeleteAction | undefined): () => void => {
+    switch (action) {
+      case DeleteAction.USER: return removeUser
+      case DeleteAction.CLIENT: return removeClient
+      case undefined: return () => undefined
+    }
+  }
+
   const removeClient = () => {
     deleteClient.execute(client.id)
+  }
+
+  const removeUser = () => {
+    deleteUser.execute(selectedUser!.id)
+      .then(closeDialog)
   }
 
   return <>
@@ -133,14 +150,18 @@ function Row(props: {client : ListClientResponse}) {
         <IconButton color={"warning"} href={`/admin/client/edit/${client.id}`}>
           <ModeEditIcon />
         </IconButton>
-        <IconButton color={"error"} onClick={() => setOpenDialog(true)}>
+        <IconButton color={"error"} onClick={() => {
+          setDialogTitle('Client')
+          setDeleteAction(DeleteAction.CLIENT)
+          setOpenDialog(true)
+        }}>
           <DeleteIcon />
         </IconButton>
       </StyledTableCell>
     </StyledTableRow>
     <StyledTableRow>
       <StyledTableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-        <DeleteConfirmDialog title={"Client"} open={openDialog} close={closeDialog} action={removeClient}></DeleteConfirmDialog>
+        <DeleteConfirmDialog title={dialogTitle} open={openDialog} close={closeDialog} action={deleteData(deleteAction)}></DeleteConfirmDialog>
         <Collapse in={showEmployeeList} timeout="auto" unmountOnExit>
           <Box sx={{margin: 1}}>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
@@ -183,7 +204,12 @@ function Row(props: {client : ListClientResponse}) {
                         <IconButton color={"warning"}>
                           <ModeEditIcon />
                         </IconButton>
-                        <IconButton color={"error"}>
+                        <IconButton color={"error"} onClick={() => {
+                          setDialogTitle('Employé')
+                          setSelectedUser(user)
+                          setDeleteAction(DeleteAction.USER)
+                          setOpenDialog(true)
+                        }}>
                           <DeleteIcon />
                         </IconButton>
                       </StyledTableCell>

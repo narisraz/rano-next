@@ -3,6 +3,7 @@ import {User} from "../../../domain/entities/User";
 
 export const userConverter: FirestoreDataConverter<User> = {
   fromFirestore: (snapshot) => ({
+    id: snapshot.get("id"),
     email: snapshot.get("email"),
     role: snapshot.get("role"),
     clientId: snapshot.get("clientId"),
@@ -13,6 +14,7 @@ export const userConverter: FirestoreDataConverter<User> = {
     telephones: snapshot.get("telephones")
   }),
   toFirestore: (user) => ({
+    id: user.id,
     email: user.email,
     role: user.role,
     clientId: user.clientId,

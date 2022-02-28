@@ -1,7 +1,7 @@
 import {UserRepository} from "../../domain/ports/out/UserRepository";
 import {User} from "../../domain/entities/User";
 import {Observable, of} from "rxjs";
-import {collection, doc, query, setDoc} from "@firebase/firestore";
+import {collection, deleteDoc, doc, query, setDoc} from "@firebase/firestore";
 import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
 import {Builder} from "builder-pattern";
 import {collectionData} from "rxfire/firestore";
@@ -14,7 +14,7 @@ export class UserFirestoreRepository extends UserRepository {
 
   add(user: User): Observable<User> {
     const docId = createFirestoreId(this.USER_COLLECTION)
-    const userWithdId: User = Builder(user).address({...user.address}).build()
+    const userWithdId: User = Builder(user).id(docId).address({...user.address}).build()
     const siteDocRef = doc(FIRESTORE, `${this.USER_COLLECTION}/${docId}`)
     setDoc(siteDocRef, userWithdId)
     return of(userWithdId)
@@ -23,6 +23,10 @@ export class UserFirestoreRepository extends UserRepository {
   getAll(): Observable<User[]> {
     const clientQuery = query(this.USER_COLLECTION_REF).withConverter(userConverter)
     return collectionData(clientQuery)
+  }
+
+  delete(id: string): Promise<void> {
+    return deleteDoc(doc(FIRESTORE, `${this.USER_COLLECTION}/${id}`))
   }
 
 }
