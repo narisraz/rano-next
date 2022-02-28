@@ -40,31 +40,31 @@ export default function ClientDetail() {
         <Table sx={{ minWidth: 650 }}>
           <TableBody>
             <TableRow>
-              <TableCell>Région</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Région</TableCell>
               <TableCell>{client?.address.region}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Commune</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Commune</TableCell>
               <TableCell>{client?.address.commune}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Lot</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Lot</TableCell>
               <TableCell>{client?.address.lot} - {client?.address.fokontany}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Téléphones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Téléphones</TableCell>
               <TableCell>{client?.telephones}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Email</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
               <TableCell>{client?.email}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>NIF</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>NIF</TableCell>
               <TableCell>{client?.nif}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Stat</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Stat</TableCell>
               <TableCell>{client?.stat}</TableCell>
             </TableRow>
           </TableBody>
