@@ -1,11 +1,12 @@
 import {UserRepository} from "../../domain/ports/out/UserRepository";
 import {User} from "../../domain/entities/User";
-import {Observable, of} from "rxjs";
-import {collection, deleteDoc, doc, query, setDoc} from "@firebase/firestore";
+import {from, Observable, of} from "rxjs";
+import {collection, deleteDoc, doc, query, setDoc, updateDoc} from "@firebase/firestore";
 import {createFirestoreId, FIRESTORE} from "../../configurations/firebase.config";
 import {Builder} from "builder-pattern";
-import {collectionData} from "rxfire/firestore";
+import {collectionData, docData} from "rxfire/firestore";
 import {userConverter} from "./converters/UserConverter";
+import {map} from "rxjs/operators";
 
 export class UserFirestoreRepository extends UserRepository {
 
@@ -27,6 +28,18 @@ export class UserFirestoreRepository extends UserRepository {
 
   delete(id: string): Promise<void> {
     return deleteDoc(doc(FIRESTORE, `${this.USER_COLLECTION}/${id}`))
+  }
+
+  findById(id: string): Observable<User | undefined> {
+    const userDoc = doc(FIRESTORE, `${this.USER_COLLECTION}/${id}`).withConverter(userConverter)
+    return docData(userDoc)
+  }
+
+  update(value: User): Observable<User> {
+    return from(updateDoc(doc(FIRESTORE, `${this.USER_COLLECTION}/${value.id}`), { ...value, address: {...value.address} }))
+      .pipe(
+        map(_ => value)
+      )
   }
 
 }

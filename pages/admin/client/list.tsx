@@ -201,7 +201,7 @@ function Row(props: {client : ListClientResponse}) {
                         <IconButton color={"success"}>
                           <VisibilityIcon />
                         </IconButton>
-                        <IconButton color={"warning"}>
+                        <IconButton color={"warning"} href={`/admin/client/${client.id}/user/edit/${user.id}`}>
                           <ModeEditIcon />
                         </IconButton>
                         <IconButton color={"error"} onClick={() => {
