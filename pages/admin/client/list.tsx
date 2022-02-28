@@ -53,7 +53,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function ClientList() {
-  const [clients, setClients] = useState<Client[]>([])
+  const [clients, setClients] = useState<ListClientResponse[]>([])
   const [openBackdrop, setOpenBackdrop] = useState(true)
 
   useEffect(() => {
