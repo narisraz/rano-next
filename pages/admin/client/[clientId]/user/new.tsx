@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
-import {Button, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {Button, Divider, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 import {useRouter} from "next/router";
 import {useFormik} from "formik";
 import {roles, User} from "../../../../../domain/entities/User";
-import {FC} from "react";
+import {FC, useEffect, useState} from "react";
 import AdminLayout from "../../../../../components/layouts/AdminLayout";
-import {addUser} from "../../../../../configurations/ioc.container";
+import {addUser, getClient} from "../../../../../configurations/ioc.container";
 import {Builder} from "builder-pattern";
 import {lastValueFrom} from "rxjs";
 import {Address} from "../../../../../domain/entities/Address";
@@ -15,6 +15,14 @@ import {StyledFieldset} from "../../../../../components/forms/StyledFieldset";
 export default function NewUser() {
   const router = useRouter()
   const clientId = router.query.clientId
+  const [clientName, setClientName] = useState('')
+
+  useEffect(() => {
+    const ref = getClient.execute(clientId as string).subscribe(value => {
+      setClientName(value?.name ?? '')
+    })
+    return () => ref.unsubscribe()
+  }, [clientId])
 
   const formik = useFormik({
     initialValues: {
@@ -54,10 +62,9 @@ export default function NewUser() {
 
   return (
     <Box>
-      <div>
-        <h2>{clientId}</h2>
-      </div>
-      <h3>Nouvel employé</h3>
+      <h3>{clientName} - Nouvel employé</h3>
+      <Divider />
+      <Box sx={{m: 2}}></Box>
       <form onSubmit={formik.handleSubmit}>
         <Box>
           <TextField label="Email" variant="outlined" name="email" value={formik.values.email} onChange={formik.handleChange} />
