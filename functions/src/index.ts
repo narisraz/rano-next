@@ -14,13 +14,13 @@ exports.createAccount = functions.firestore.document("user/{userId}")
       if (role < 0) {
         await admin.auth().createUser({
           email: email,
-          password: "@Dm|n",
+          password: "p@$$w0rD",
         });
       }
       await admin.auth().getUserByEmail(email)
           .then(async (value) => {
             const role = snapshot.get("role");
-            await admin.auth().createCustomToken(value.uid, {
+            await admin.auth().setCustomUserClaims(value.uid, {
               role: role,
             });
           });
@@ -40,12 +40,12 @@ exports.updateAccount = functions.firestore.document("user/{userId}")
       const email = change.after.get("email");
       await admin.auth().getUserByEmail(email)
           .then(async (value) => {
-            const isActive = change.after.get("active");
+            const isActive = change.after.get("active") as boolean;
             const role = change.after.get("role");
             await admin.auth().updateUser(value.uid, {
-              disabled: isActive,
+              disabled: !isActive,
             });
-            await admin.auth().createCustomToken(value.uid, {
+            await admin.auth().setCustomUserClaims(value.uid, {
               role: role,
             });
           });
