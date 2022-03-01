@@ -1,6 +1,8 @@
 import {Firestore, getFirestore} from "@firebase/firestore";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import {Auth, getAuth} from "@firebase/auth";
+import {authState} from "rxfire/auth";
 
 export let app: any;
 
@@ -16,6 +18,8 @@ if (!app) {
   });
 }
 
+export const AUTH: Auth = getAuth(app)
+export const AUTH_STATE = authState(AUTH)
 export const FIRESTORE: Firestore = getFirestore(app);
 
 export function createFirestoreId(collection: string): string {

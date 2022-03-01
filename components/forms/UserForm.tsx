@@ -8,16 +8,37 @@ import {Address} from "../../domain/entities/Address";
 import {combineLatest, lastValueFrom, Subscription} from "rxjs";
 import Box from "@mui/material/Box";
 import {AppBackdrop} from "../AppBackdrop";
-import {Button, Divider, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+import {
+  Alert,
+  AlertTitle,
+  Button,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Switch,
+  TextField
+} from "@mui/material";
 import {StyledFieldset} from "./StyledFieldset";
+import {AUTH, AUTH_STATE} from "../../configurations/firebase.config";
+import {createUserWithEmailAndPassword} from "@firebase/auth";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 
 export interface UserFormProps {
-  id?: string,
+  id?: string
   clientId?: string
 }
 
 export function UserForm({ id, clientId }: UserFormProps) {
+  const refs: Subscription[] = [];
   const router = useRouter()
+  const [emailAlreadyInUser, setEmailAlreadyInUser] = useState<string>()
   const [clientName, setClientName] = useState('')
   const [openBackdrop, setOpenBackdrop] = useState(true)
   const [initialValues, setInitialValues] = useState({
@@ -31,12 +52,12 @@ export function UserForm({ id, clientId }: UserFormProps) {
     email: '',
     role: 0,
     active: false,
+    password: ''
   })
 
   useEffect(() => {
-    let ref: Subscription;
     if (id) {
-      ref = combineLatest([
+      const refClientUser = combineLatest([
         getUser.execute(id as string),
         getClient.execute(clientId as string)
       ]).subscribe(([user, client]) => {
@@ -53,17 +74,20 @@ export function UserForm({ id, clientId }: UserFormProps) {
           email: user?.email ?? '',
           role: user?.role ?? 0,
           active: user?.active ?? false,
+          password: ''
         })
       })
+      refs.push(refClientUser)
     } else {
-      ref = getClient.execute(clientId as string).subscribe(client => {
+      const refClient = getClient.execute(clientId as string).subscribe(client => {
         setClientName(client?.name ?? '')
         setOpenBackdrop(false)
       })
+      refs.push(refClient)
     }
 
     return () => {
-      ref.unsubscribe()
+      refs.forEach(ref => ref.unsubscribe())
     }
   }, [id, clientId])
 
@@ -89,12 +113,42 @@ export function UserForm({ id, clientId }: UserFormProps) {
         .clientId(clientId as string)
         .build()
 
-      const user$ = id ? updateUser.execute(Builder(user).id(id).build()) : addUser.execute(user)
-      await lastValueFrom(user$)
-        .then(() => setOpenBackdrop(false))
-        .then(() => router.replace("/admin/client/list"));
+      if (!id) {
+        const refAuth = AUTH_STATE.subscribe(async loggedUser => {
+          if (loggedUser?.email != user.email) {
+            await createUserWithEmailAndPassword(AUTH, values.email, values.password)
+              .then(_ => AUTH.updateCurrentUser(loggedUser))
+              .then(async _ => {
+                if (!emailAlreadyInUser) {
+                  const user$ = addUser.execute(user)
+                  await lastValueFrom(user$)
+                    .then(() => router.replace("/admin/client/list"));
+                }
+              })
+              .catch(() => {
+                setOpenBackdrop(false)
+                setEmailAlreadyInUser(user.email)
+              })
+          }
+        })
+        refs.push(refAuth)
+      } else {
+        const user$ = updateUser.execute(Builder(user).id(id).build())
+        await lastValueFrom(user$)
+          .then(() => router.replace("/admin/client/list"));
+      }
     }
   })
+
+  const [showPassword, setShowPassword] = useState(false)
+
+  const handleClickShowPassword = () => {
+    setShowPassword(!showPassword)
+  };
+
+  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   return (
     <Box>
@@ -103,10 +157,38 @@ export function UserForm({ id, clientId }: UserFormProps) {
       <Divider />
       <Box sx={{m: 2}}></Box>
       <form onSubmit={formik.handleSubmit}>
-        <Box>
-          <TextField sx={{ width: '30%' }} label="Email" variant="outlined" name="email" value={formik.values.email} onChange={formik.handleChange} />
+        {emailAlreadyInUser && <Alert severity="error" sx={{mb: 2}}>
+          <AlertTitle>Erreur</AlertTitle>
+          L&apos;adresse email <strong>{emailAlreadyInUser}</strong> correspond a un compte déjà existant
+        </Alert>}
+        <Box sx={{ mb: 2 }}>
+          <StyledFieldset>
+            <legend>Authentification : </legend>
+            <TextField disabled={id != undefined} sx={{ width: '40ch', mr: 2 }} label="Email" variant="outlined" name="email" value={formik.values.email} onChange={formik.handleChange} />
+            {id == undefined && <FormControl variant="outlined">
+              <InputLabel>Mot de passe</InputLabel>
+              <OutlinedInput
+                name={"password"}
+                type={showPassword ? 'text' : 'password'}
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff/> : <Visibility/>}
+                    </IconButton>
+                  </InputAdornment>
+                }
+                label="Mot de passe"
+              />
+            </FormControl>}
+          </StyledFieldset>
         </Box>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mb: 2 }}>
           <StyledFieldset>
             <legend>Informations personnels : </legend>
             <TextField label="Nom" variant="outlined" sx={{ mr: 2 }} name="name" value={formik.values.name} onChange={formik.handleChange} />
@@ -114,7 +196,7 @@ export function UserForm({ id, clientId }: UserFormProps) {
             <TextField label="Téléphones" variant="outlined" name="telephones" value={formik.values.telephones} onChange={formik.handleChange} />
           </StyledFieldset>
         </Box>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mb: 2 }}>
           <StyledFieldset>
             <legend>Adresse : </legend>
             <TextField label="Région" variant="outlined" sx={{ mr: 2 }} name="region" value={formik.values.region} onChange={formik.handleChange} />
@@ -123,7 +205,7 @@ export function UserForm({ id, clientId }: UserFormProps) {
             <TextField label="Lot" variant="outlined" name="lot" value={formik.values.lot} onChange={formik.handleChange} />
           </StyledFieldset>
         </Box>
-        <Box sx={{ mt: 2 }}>
+        <Box sx={{ mb: 2 }}>
           <FormControl>
             <InputLabel>Rôle</InputLabel>
             <Select
@@ -138,7 +220,12 @@ export function UserForm({ id, clientId }: UserFormProps) {
             </Select>
           </FormControl>
         </Box>
-        <Button sx={{ mt: 2 }} variant={"contained"} type={"submit"}>Sauvegarder</Button>
+        <Box sx={{ mb: 2 }}>
+          <FormGroup>
+            <FormControlLabel control={<Switch name={"active"} checked={formik.values.active} onChange={formik.handleChange} />} label="Active" />
+          </FormGroup>
+        </Box>
+        <Button variant={"contained"} type={"submit"}>Sauvegarder</Button>
       </form>
     </Box>
   )
