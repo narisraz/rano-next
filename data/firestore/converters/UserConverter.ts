@@ -5,6 +5,7 @@ export const userConverter: FirestoreDataConverter<User> = {
   fromFirestore: (snapshot) => ({
     id: snapshot.get("id"),
     email: snapshot.get("email"),
+    password: snapshot.get("password"),
     role: snapshot.get("role"),
     clientId: snapshot.get("clientId"),
     active: snapshot.get("active"),
@@ -16,6 +17,7 @@ export const userConverter: FirestoreDataConverter<User> = {
   toFirestore: (user) => ({
     id: user.id,
     email: user.email,
+    password: user.password,
     role: user.role,
     clientId: user.clientId,
     active: user.active,

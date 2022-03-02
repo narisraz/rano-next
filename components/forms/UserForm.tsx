@@ -1,101 +1,53 @@
-import {useRouter} from "next/router";
-import {useEffect, useState} from "react";
-import {addUser, getClient, getUser, updateUser} from "../../configurations/ioc.container";
+import React, {FC, useState} from "react";
 import {useFormik} from "formik";
 import {Builder} from "builder-pattern";
 import {roles, User} from "../../domain/entities/User";
 import {Address} from "../../domain/entities/Address";
-import {combineLatest, lastValueFrom, Subscription} from "rxjs";
 import Box from "@mui/material/Box";
-import {AppBackdrop} from "../AppBackdrop";
+import {StyledFieldset} from "./StyledFieldset";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import {Client} from "../../domain/entities/Client";
+import Divider from "@mui/material/Divider";
+import TextField from "@mui/material/TextField";
 import {
-  Alert,
-  AlertTitle,
   Button,
-  Divider,
   FormControl,
   FormControlLabel,
   FormGroup,
-  IconButton,
-  InputAdornment,
-  InputLabel,
-  MenuItem,
+  IconButton, InputAdornment, InputLabel, MenuItem,
   OutlinedInput,
   Select,
-  Switch,
-  TextField
+  Switch
 } from "@mui/material";
-import {StyledFieldset} from "./StyledFieldset";
-import {AUTH, AUTH_STATE} from "../../configurations/firebase.config";
-import {createUserWithEmailAndPassword} from "@firebase/auth";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
+
+export class UserFormField {
+  name: string = ''
+  firstName: string = ''
+  region: string = ''
+  commune: string = ''
+  fokontany: string = ''
+  telephones: string = ''
+  lot: string = ''
+  email: string = ''
+  role: number = 0
+  active: boolean = false
+  password: string = ''
+}
 
 export interface UserFormProps {
   id?: string
-  clientId?: string
+  client?: Client
+  formFieldValue: UserFormField
+  action: (user: User, password?: string) => void
+  Error?: FC
 }
 
-export function UserForm({ id, clientId }: UserFormProps) {
-  const refs: Subscription[] = [];
-  const router = useRouter()
-  const [emailAlreadyInUser, setEmailAlreadyInUser] = useState<string>()
-  const [clientName, setClientName] = useState('')
-  const [openBackdrop, setOpenBackdrop] = useState(true)
-  const [initialValues, setInitialValues] = useState({
-    name: '',
-    firstName: '',
-    region: '',
-    commune: '',
-    fokontany: '',
-    telephones: '',
-    lot: '',
-    email: '',
-    role: 0,
-    active: false,
-    password: ''
-  })
-
-  useEffect(() => {
-    if (id) {
-      const refClientUser = combineLatest([
-        getUser.execute(id as string),
-        getClient.execute(clientId as string)
-      ]).subscribe(([user, client]) => {
-        setClientName(client?.name ?? '')
-        setOpenBackdrop(false)
-        setInitialValues({
-          name: user?.name ?? '',
-          firstName: user?.firstName ?? '',
-          region: user?.address?.region ?? '',
-          commune: user?.address?.commune ?? '',
-          fokontany: user?.address?.fokontany ?? '',
-          telephones: user?.telephones ?? '',
-          lot: user?.address?.lot ?? '',
-          email: user?.email ?? '',
-          role: user?.role ?? 0,
-          active: user?.active ?? false,
-          password: ''
-        })
-      })
-      refs.push(refClientUser)
-    } else {
-      const refClient = getClient.execute(clientId as string).subscribe(client => {
-        setClientName(client?.name ?? '')
-        setOpenBackdrop(false)
-      })
-      refs.push(refClient)
-    }
-
-    return () => {
-      refs.forEach(ref => ref.unsubscribe())
-    }
-  }, [id, clientId])
+export function UserForm({ id, client, formFieldValue, action, Error }: UserFormProps) {
 
   const formik = useFormik({
     enableReinitialize: true,
-    initialValues: initialValues,
-    onSubmit: async (values) => {
-      setOpenBackdrop(true)
+    initialValues: formFieldValue,
+    onSubmit: async (values: UserFormField) => {
       const user = Builder(User)
         .name(values.name)
         .firstName(values.firstName)
@@ -110,33 +62,11 @@ export function UserForm({ id, clientId }: UserFormProps) {
         .email(values.email)
         .role(values.role)
         .active(values.active)
-        .clientId(clientId as string)
+        .clientId(client?.id ?? '')
+        .password(id ? formFieldValue?.password ?? '' : values.password)
         .build()
 
-      if (!id) {
-        const refAuth = AUTH_STATE.subscribe(async loggedUser => {
-          if (loggedUser?.email != user.email) {
-            await createUserWithEmailAndPassword(AUTH, values.email, values.password)
-              .then(_ => AUTH.updateCurrentUser(loggedUser))
-              .then(async _ => {
-                if (!emailAlreadyInUser) {
-                  const user$ = addUser.execute(user)
-                  await lastValueFrom(user$)
-                    .then(() => router.replace("/admin/client/list"));
-                }
-              })
-              .catch(() => {
-                setOpenBackdrop(false)
-                setEmailAlreadyInUser(user.email)
-              })
-          }
-        })
-        refs.push(refAuth)
-      } else {
-        const user$ = updateUser.execute(Builder(user).id(id).build())
-        await lastValueFrom(user$)
-          .then(() => router.replace("/admin/client/list"));
-      }
+      id ? action(user) : action(user)
     }
   })
 
@@ -152,15 +82,12 @@ export function UserForm({ id, clientId }: UserFormProps) {
 
   return (
     <Box>
-      <AppBackdrop opened={openBackdrop} />
-      <h3>{clientName} - Nouvel employé</h3>
-      <Divider />
-      <Box sx={{m: 2}}></Box>
+      <h3>{client?.name} - Nouvel employé</h3>
+      <Divider sx={{mb: 2}} />
       <form onSubmit={formik.handleSubmit}>
-        {emailAlreadyInUser && <Alert severity="error" sx={{mb: 2}}>
-          <AlertTitle>Erreur</AlertTitle>
-          L&apos;adresse email <strong>{emailAlreadyInUser}</strong> correspond a un compte déjà existant
-        </Alert>}
+        {Error && <Box sx={{mb: 2}}>
+            <Error/>
+        </Box>}
         <Box sx={{ mb: 2 }}>
           <StyledFieldset>
             <legend>Authentification : </legend>
