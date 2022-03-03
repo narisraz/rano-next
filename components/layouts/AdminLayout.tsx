@@ -1,4 +1,4 @@
-import {PropsWithChildren, useState} from "react";
+import {PropsWithChildren, useEffect, useState} from "react";
 import Box from "@mui/material/Box";
 import {
   CSSObject,
@@ -21,6 +21,8 @@ import {useTheme} from "@mui/system";
 import MuiAppBar, {AppBarProps as MuiAppBarProps} from '@mui/material/AppBar';
 import MuiDrawer from '@mui/material/Drawer';
 import {useRouter} from "next/router";
+import {AUTH} from "../../configurations/firebase.config";
+import nookies from "nookies"
 
 const drawerWidth = 240;
 
@@ -105,6 +107,15 @@ export default function AdminLayout({ children }: PropsWithChildren<any>) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    AUTH.onIdTokenChanged(async user => {
+      if (user) {
+        const token = await user.getIdToken()
+        nookies.set(undefined, 'token', token, { path: '/' })
+      }
+    })
+  })
 
   return (
     <Box sx={{ display: 'flex' }}>

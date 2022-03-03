@@ -61,7 +61,7 @@ export default function NewUser() {
     subscriptions.push(refClient)
 
     return () => subscriptions.forEach(value => value.unsubscribe())
-  }, [clientId])
+  }, [clientId, subscriptions])
 
   const Error = () => {
     return (
