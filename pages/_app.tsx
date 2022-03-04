@@ -7,11 +7,9 @@ import CssBaseline from '@mui/material/CssBaseline';
 import {CacheProvider, EmotionCache} from '@emotion/react';
 import theme from '../src/theme';
 import createEmotionCache from '../src/createEmotioncache';
-import {GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult, NextPage} from "next";
+import {NextPage} from "next";
 import "reflect-metadata";
 import {Subscribe} from "@react-rxjs/core";
-import nookies from "nookies";
-import {firebaseAdmin} from "../configurations/firebaseadmin.config";
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode
@@ -48,46 +46,4 @@ export default function MyApp(props: MyAppProps) {
       </ThemeProvider>
     </CacheProvider>
   );
-}
-
-interface Props {
-  uid: string
-}
-
-export const getServerSideProps: GetServerSideProps<Props> = async (context: GetServerSidePropsContext): Promise<GetServerSidePropsResult<Props>> => {
-  try {
-    const cookies = nookies.get(context)
-    const token = await firebaseAdmin.auth().verifyIdToken(cookies.token)
-
-    const { uid } = token;
-
-    if (!uid) {
-      return {
-        props: {
-          uid: ''
-        },
-        redirect: {
-          statusCode: 302,
-          destination: '/login'
-        }
-      }
-    }
-
-    return {
-      props: {
-        uid: ''
-      },
-    }
-
-  } catch (e) {
-    return {
-      props: {
-        uid: ''
-      },
-      redirect: {
-        statusCode: 302,
-        destination: '/login'
-      }
-    }
-  }
 }
