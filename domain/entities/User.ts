@@ -1,6 +1,12 @@
 import {Address} from "./Address";
 
-export const roles = ["Gestionnaire", "Releveur", "Caissier"]
+export const ADMIN_ROLE = -1
+export enum ROLE {
+  GESTIONNAIRE = "Gestionnaire",
+  RELEVEUR = "Releveur",
+  CAISSIER = "Caissier"
+}
+export const roles = [ROLE.GESTIONNAIRE, ROLE.RELEVEUR, ROLE.CAISSIER]
 
 export class User {
   id!: string

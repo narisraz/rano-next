@@ -21,10 +21,11 @@ export default function Login() {
 
         const tokenResult = await AUTH.currentUser?.getIdTokenResult()
         const role = tokenResult?.claims.role ?? 0
+        Cookies.set('role', `${role}`)
         switch (role) {
           case 0: await router.replace("/client/dashboard")
           case 1: await router.replace("/client/indexing")
-          case 2: await router.replace("/client/invoicing")
+          case 2: await router.replace("/client/encaissement")
         }
       }
     })
